@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   Human:
-    RunSpeed: 1.5
+    RunSpeed: 3
+    JumpBackSpeed: 5

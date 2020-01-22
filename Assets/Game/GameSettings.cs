@@ -14,8 +14,11 @@ public class GameSettings : ScriptableObject
 	[Serializable]
     public class HumanSettings
     {
-        [Range(0.1f, 5f)]
-        public float RunSpeed = 1.5f;
+        [Range(0.5f, 5f)]
+        public float RunSpeed = 2f;
+
+        [Range(3f, 10f)]
+        public float JumpBackSpeed = 5f;
     }
 
 	#endregion

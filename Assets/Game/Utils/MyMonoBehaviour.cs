@@ -8,16 +8,27 @@ public class MyMonoBehaviour : MonoBehaviour
 
 	protected virtual void Awake()
 	{
+		SubscribeToEvents();
 	}
 
 	protected virtual void OnDestroy()
 	{
+		UnsubscribeFromEvents();
 	}
+
+	protected virtual void SubscribeToEvents() { }
+
+	protected virtual void UnsubscribeFromEvents() { }
 
 	/// <summary>
 	/// Called only in Editor in "Edit" mode.
 	/// </summary>
 	protected virtual void OnEditorValidate() { }
+
+	/// <summary>
+	/// Called only in 
+	/// </summary>
+	protected virtual void OnEditorDrawGizmos() { }
 
 #if UNITY_EDITOR
 
@@ -27,6 +38,11 @@ public class MyMonoBehaviour : MonoBehaviour
 			return;
 
 		OnEditorValidate();
+	}
+
+	private void OnDrawGizmos()
+	{
+		OnEditorDrawGizmos();
 	}
 
 #endif

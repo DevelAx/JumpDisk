@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [DisallowMultipleComponent]
-public class HumanPositionLimitsManager : MyMonoBehaviour
+public class HumanPositionLimits : MyMonoBehaviour
 {
     [SerializeField]
     private const float _xInvisibleShift = 30f;
@@ -14,7 +12,7 @@ public class HumanPositionLimitsManager : MyMonoBehaviour
 
         if (screenPos.x - Screen.width > _xInvisibleShift)
         {
-            Vector3 originPos = Camera.main.ScreenToWorldPoint(new Vector3(-30, screenPos.y, screenPos.z));
+            Vector3 originPos = Camera.main.ScreenToWorldPoint(new Vector3(-_xInvisibleShift, screenPos.y, screenPos.z));
             transform.position = new Vector3(originPos.x, transform.position.y, transform.position.z);
         }
     }
