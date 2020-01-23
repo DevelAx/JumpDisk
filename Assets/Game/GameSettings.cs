@@ -9,6 +9,8 @@ public class GameSettings : ScriptableObject
     public HumanSettings Human;
     public DiskSettings[] Disks;
 
+    public DiskSettings CurrentDisk { get; set; }
+
     #region Inner Types
 
     [Serializable]
@@ -25,7 +27,7 @@ public class GameSettings : ScriptableObject
     public class DiskSettings
     {
         public float Radius = 1.5f;
-        //public float JumpHeight = 4f;
+        public float JumpHeight = 4f;
     }
 
 	#endregion

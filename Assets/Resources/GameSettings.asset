@@ -17,5 +17,8 @@ MonoBehaviour:
     JumpBackSpeed: 5
   Disks:
   - Radius: 3.5
+    JumpHeight: 6
   - Radius: 2.5
+    JumpHeight: 5
   - Radius: 1.5
+    JumpHeight: 4

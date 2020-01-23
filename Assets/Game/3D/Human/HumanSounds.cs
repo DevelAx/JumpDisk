@@ -27,7 +27,7 @@ public class HumanSounds : MyMonoBehaviour
             return;
 
         audio.volume = strength;
-        audio.pitch = 0.75f + strength;
+        audio.pitch = 1.75f - strength;
         audio.Play();
     }
 

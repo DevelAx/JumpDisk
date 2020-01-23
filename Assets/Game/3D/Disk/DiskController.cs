@@ -29,7 +29,8 @@ public class DiskController : SingleBehaviour<DiskController>
         if (++_diskId >= Settings.Disks.Length)
             _diskId = 0;
 
-        float radius = Settings.Disks[_diskId].Radius;
+        Settings.CurrentDisk = Settings.Disks[_diskId];
+        float radius = Settings.CurrentDisk.Radius;
         transform.localScale = new Vector3(radius, transform.localScale.y, radius);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -20,32 +21,12 @@ public class HumanJump : MyMonoBehaviour
 	private float _groundY;
 	private float _jumpStrength;
 	private float _targetX;
+	private float _gravity;
+	private float _maxJumpHeight;
 
 	private float BackSpeed => Settings.Human.JumpBackSpeed;
 
-	#region Public
-
-	public bool IsGrounded { get; private set; }
-
-	public void JumpTo(Vector3 wordPosition, Vector3 screenPosition)
-	{
-#if UNITY_EDITOR
-		_lastTargetPosition = wordPosition;
-		_lastTargetRadius = 1.5f;
-#endif
-		_targetX = wordPosition.x;
-		_jumpStrength = CalcJumpStrength(screenPosition);
-		float distance = Vector3.Distance(transform.position, wordPosition);
-		float t = distance / BackSpeed; // Calc time required to reach the target poistion with a given speed.
-		float startJumpSpeed = Constants.Physics.G * t / 2; // Calc initial jump speed required to be long time (t) enough in the air to reach the target position.
-		Vector3 upVelocity = Vector3.up * startJumpSpeed;
-		Vector3 backVelocity = Vector3.left * BackSpeed;
-		_velocity = upVelocity + backVelocity;
-
-		StartCoroutine(PlayJump(1 / t));
-	}
-
-	#endregion
+	private float JumpHeight => Settings.CurrentDisk.JumpHeight;
 
 	protected override void Awake()
 	{
@@ -55,6 +36,7 @@ public class HumanJump : MyMonoBehaviour
 
 		IsGrounded = true;
 		_groundY = transform.position.y;
+		_maxJumpHeight = Settings.Disks.Max(d => d.JumpHeight);
 	}
 
 	protected override void OnEditorDrawGizmos()
@@ -69,6 +51,33 @@ public class HumanJump : MyMonoBehaviour
 		Gizmos.DrawWireSphere(_lastTargetPosition, _lastTargetRadius);
 	}
 
+	#region Public
+
+	public bool IsGrounded { get; private set; }
+
+	public void JumpTo(Vector3 wordPosition, Vector3 screenPosition)
+	{
+#if UNITY_EDITOR
+		_lastTargetPosition = wordPosition;
+		_lastTargetRadius = 1.5f;
+#endif
+
+		_targetX = wordPosition.x;
+		_jumpStrength = CalcJumpStrength(screenPosition);
+		float distance = Vector3.Distance(transform.position, wordPosition);
+		float t = distance / BackSpeed / 2; // Calc half of time required to reach the target poistion with a given speed.
+		_gravity = 2 * JumpHeight / (t * t); // // Calc required gravity acceleration to be in the air for (t) seconds.
+		float startJumpSpeed = _gravity * t; // Calc initial jump speed required to be long time (t) enough in the air to reach the target position.
+
+		Vector3 upVelocity = Vector3.up * startJumpSpeed;
+		Vector3 backVelocity = Vector3.left * BackSpeed;
+		_velocity = upVelocity + backVelocity;
+
+		StartCoroutine(PlayJump(1 / t));
+	}
+
+	#endregion
+
 	#region Helpers
 
 	private IEnumerator PlayJump(float animationSpeedRatio)
@@ -77,10 +86,10 @@ public class HumanJump : MyMonoBehaviour
 		_flip.Play(animationSpeedRatio);
 		_sounds.PlayJump(_jumpStrength);
 
-		while (_groundY <= transform.position.y)
+		while (_targetX < transform.position.x)
 		{
 			transform.position += _velocity * Time.smoothDeltaTime;
-			_velocity += Vector3.down * Constants.Physics.G * Time.smoothDeltaTime;
+			_velocity += Vector3.down * _gravity * Time.smoothDeltaTime;
 			yield return null;
 		}
 
@@ -94,7 +103,9 @@ public class HumanJump : MyMonoBehaviour
 	{
 		Vector3 humanScreenPos = Camera.main.WorldToScreenPoint(transform.position);
 		var xDistance = Mathf.Abs(humanScreenPos.x - screenPosition.x);
-		return xDistance / Screen.width;
+		float lenFactor = xDistance / Screen.width;
+		float heightFactor = JumpHeight / _maxJumpHeight;
+		return (lenFactor + heightFactor) / 2;
 	}
 
 	protected override void OnEditorValidate()
