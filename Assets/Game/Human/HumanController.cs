@@ -74,7 +74,7 @@ public class HumanController : MyMonoBehaviour
 
     private bool IsTargetBehindDisk(Vector3 position)
     {
-        return Disk.MinX > position.x;
+        return DiskController.MinX > position.x;
     }
 
     #endregion

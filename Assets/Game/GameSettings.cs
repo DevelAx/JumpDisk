@@ -7,11 +7,11 @@ using UnityEngine;
 public class GameSettings : ScriptableObject
 {
     public HumanSettings Human;
+    public DiskSettings[] Disks;
 
+    #region Inner Types
 
-	#region Inner Types
-
-	[Serializable]
+    [Serializable]
     public class HumanSettings
     {
         [Range(0.5f, 5f)]
@@ -19,6 +19,13 @@ public class GameSettings : ScriptableObject
 
         [Range(3f, 10f)]
         public float JumpBackSpeed = 5f;
+    }
+
+    [Serializable]
+    public class DiskSettings
+    {
+        public float Radius = 1.5f;
+        //public float JumpHeight = 4f;
     }
 
 	#endregion

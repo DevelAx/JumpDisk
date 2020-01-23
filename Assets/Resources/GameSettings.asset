@@ -15,3 +15,7 @@ MonoBehaviour:
   Human:
     RunSpeed: 3
     JumpBackSpeed: 5
+  Disks:
+  - Radius: 3.5
+  - Radius: 2.5
+  - Radius: 1.5

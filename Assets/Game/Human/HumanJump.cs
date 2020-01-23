@@ -11,29 +11,21 @@ public class HumanJump : MyMonoBehaviour
 	[SerializeField]
 	private HumanFlip _flip = default;
 
-	private Vector3 _velocity;
-	private float _groundY;
-	private float _jumpStrength;
-	private float _targetX;
-
 #if UNITY_EDITOR
 	private Vector3 _lastTargetPosition;
 	private float _lastTargetRadius;
 #endif
 
+	private Vector3 _velocity;
+	private float _groundY;
+	private float _jumpStrength;
+	private float _targetX;
+
 	private float BackSpeed => Settings.Human.JumpBackSpeed;
 
+	#region Public
+
 	public bool IsGrounded { get; private set; }
-
-	protected override void Awake()
-	{
-		base.Awake();
-		Debug.Assert(_flip, nameof(_flip));
-		Debug.Assert(_sounds, nameof(_sounds));
-
-		IsGrounded = true;
-		_groundY = transform.position.y;
-	}
 
 	public void JumpTo(Vector3 targetPosition)
 	{
@@ -53,6 +45,32 @@ public class HumanJump : MyMonoBehaviour
 		StartCoroutine(PlayJump(1 / t));
 	}
 
+	#endregion
+
+	protected override void Awake()
+	{
+		base.Awake();
+		Debug.Assert(_flip, nameof(_flip));
+		Debug.Assert(_sounds, nameof(_sounds));
+
+		IsGrounded = true;
+		_groundY = transform.position.y;
+	}
+
+	protected override void OnEditorDrawGizmos()
+	{
+		base.OnEditorDrawGizmos();
+
+		if (_lastTargetRadius <= 0 || _lastTargetPosition == Vector3.zero)
+			return;
+
+		_lastTargetRadius -= 0.2f * Time.deltaTime;
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere(_lastTargetPosition, _lastTargetRadius);
+	}
+
+	#region Helpers
+
 	private IEnumerator PlayJump(float animationSpeedRatio)
 	{
 		IsGrounded = false;
@@ -69,21 +87,8 @@ public class HumanJump : MyMonoBehaviour
 		IsGrounded = true;
 		transform.position = new Vector3(_targetX, _groundY, transform.position.z);
 		_sounds.PlayLanding(_jumpStrength);
+		new Event_JumpCompleted();
 	}
-
-	protected override void OnEditorDrawGizmos()
-	{
-		base.OnEditorDrawGizmos();
-
-		if (_lastTargetRadius <= 0 || _lastTargetPosition == Vector3.zero)
-			return;
-
-		_lastTargetRadius -= 0.2f * Time.deltaTime;
-		Gizmos.color = Color.red;
-		Gizmos.DrawWireSphere(_lastTargetPosition, _lastTargetRadius);
-	}
-
-	#region Helpers
 
 	private float CalcJumpStrength(Vector3 targetPosition)
 	{
