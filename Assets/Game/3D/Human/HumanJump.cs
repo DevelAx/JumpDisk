@@ -39,6 +39,8 @@ public class HumanJump : MyMonoBehaviour
 		_maxJumpHeight = Settings.Disks.Max(d => d.JumpHeight);
 	}
 
+#if UNITY_EDITOR
+
 	protected override void OnEditorDrawGizmos()
 	{
 		base.OnEditorDrawGizmos();
@@ -50,6 +52,8 @@ public class HumanJump : MyMonoBehaviour
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireSphere(_lastTargetPosition, _lastTargetRadius);
 	}
+
+#endif
 
 	#region Public
 
