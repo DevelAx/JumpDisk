@@ -2,11 +2,13 @@
 
 internal class Event_JumpPressed : SelfSignaledBaseEvent<Event_JumpPressed>
 {
-	public Vector3 Position { get; }
+	public Vector3 WorldPosition { get; }
+	public Vector3 ScreenPosition { get; }
 
-	public Event_JumpPressed(Vector3 position)
+	public Event_JumpPressed(Vector3 screenPosition, Vector3 worldPosition)
 	{
-		Position = position;
+		WorldPosition = worldPosition;
+		ScreenPosition = screenPosition;
 		Signal();
 	}
 }

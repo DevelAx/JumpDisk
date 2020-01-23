@@ -27,15 +27,15 @@ public class HumanJump : MyMonoBehaviour
 
 	public bool IsGrounded { get; private set; }
 
-	public void JumpTo(Vector3 targetPosition)
+	public void JumpTo(Vector3 wordPosition, Vector3 screenPosition)
 	{
 #if UNITY_EDITOR
-		_lastTargetPosition = targetPosition;
+		_lastTargetPosition = wordPosition;
 		_lastTargetRadius = 1.5f;
 #endif
-		_targetX = targetPosition.x;
-		_jumpStrength = CalcJumpStrength(targetPosition);
-		float distance = Vector3.Distance(transform.position, targetPosition);
+		_targetX = wordPosition.x;
+		_jumpStrength = CalcJumpStrength(screenPosition);
+		float distance = Vector3.Distance(transform.position, wordPosition);
 		float t = distance / BackSpeed; // Calc time required to reach the target poistion with a given speed.
 		float startJumpSpeed = Constants.Physics.G * t / 2; // Calc initial jump speed required to be long time (t) enough in the air to reach the target position.
 		Vector3 upVelocity = Vector3.up * startJumpSpeed;
@@ -90,11 +90,10 @@ public class HumanJump : MyMonoBehaviour
 		new Event_JumpCompleted();
 	}
 
-	private float CalcJumpStrength(Vector3 targetPosition)
+	private float CalcJumpStrength(Vector3 screenPosition)
 	{
-		Vector3 targetScreenPos = Camera.main.WorldToScreenPoint(targetPosition);
 		Vector3 humanScreenPos = Camera.main.WorldToScreenPoint(transform.position);
-		var xDistance = Mathf.Abs(humanScreenPos.x - targetScreenPos.x);
+		var xDistance = Mathf.Abs(humanScreenPos.x - screenPosition.x);
 		return xDistance / Screen.width;
 	}
 

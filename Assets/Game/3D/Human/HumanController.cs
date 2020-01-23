@@ -19,9 +19,9 @@ public class HumanController : MyMonoBehaviour
 
     private void OnJumpPressed(Event_JumpPressed @event)
     {
-        if (CanJump && IsTargetCorrect(@event.Position))
+        if (CanJump && IsTargetCorrect(@event.WorldPosition))
         {
-            _jump.JumpTo(@event.Position);
+            _jump.JumpTo(@event.WorldPosition, @event.ScreenPosition);
         }
     }
 
