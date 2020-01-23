@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
+[RequireComponent(typeof(HumanFlip))]
 public class HumanJump : MyMonoBehaviour
 {
 	[SerializeField]
-	private AudioSource _jumpAudio = default;
+	private HumanSounds _sounds = default;
 
 	[SerializeField]
-	private AudioSource _landingAudio = default;
+	private HumanFlip _flip = default;
 
 	private Vector3 _velocity;
 	private float _groundY;
 	private float _jumpStrength;
+	private float _targetX;
 
 #if UNITY_EDITOR
 	private Vector3 _lastTargetPosition;
@@ -28,6 +28,9 @@ public class HumanJump : MyMonoBehaviour
 	protected override void Awake()
 	{
 		base.Awake();
+		Debug.Assert(_flip, nameof(_flip));
+		Debug.Assert(_sounds, nameof(_sounds));
+
 		IsGrounded = true;
 		_groundY = transform.position.y;
 	}
@@ -38,6 +41,7 @@ public class HumanJump : MyMonoBehaviour
 		_lastTargetPosition = targetPosition;
 		_lastTargetRadius = 1.5f;
 #endif
+		_targetX = targetPosition.x;
 		_jumpStrength = CalcJumpStrength(targetPosition);
 		float distance = Vector3.Distance(transform.position, targetPosition);
 		float t = distance / BackSpeed; // Calc time required to reach the target poistion with a given speed.
@@ -46,13 +50,14 @@ public class HumanJump : MyMonoBehaviour
 		Vector3 backVelocity = Vector3.left * BackSpeed;
 		_velocity = upVelocity + backVelocity;
 
-		StartCoroutine(PlayJump());
+		StartCoroutine(PlayJump(1 / t));
 	}
 
-	private IEnumerator PlayJump()
+	private IEnumerator PlayJump(float animationSpeedRatio)
 	{
-		TryPlay(_jumpAudio);
 		IsGrounded = false;
+		_flip.Play(animationSpeedRatio);
+		_sounds.PlayJump(_jumpStrength);
 
 		while (_groundY <= transform.position.y)
 		{
@@ -61,15 +66,15 @@ public class HumanJump : MyMonoBehaviour
 			yield return null;
 		}
 
-		TryPlay(_landingAudio);
 		IsGrounded = true;
-		transform.position = new Vector3(transform.position.x, _groundY, transform.position.z);
+		transform.position = new Vector3(_targetX, _groundY, transform.position.z);
+		_sounds.PlayLanding(_jumpStrength);
 	}
 
 	protected override void OnEditorDrawGizmos()
 	{
 		base.OnEditorDrawGizmos();
-		
+
 		if (_lastTargetRadius <= 0 || _lastTargetPosition == Vector3.zero)
 			return;
 
@@ -88,14 +93,11 @@ public class HumanJump : MyMonoBehaviour
 		return xDistance / Screen.width;
 	}
 
-	private void TryPlay(AudioSource audio)
+	protected override void OnEditorValidate()
 	{
-		if (!audio)
-			return;
-
-		audio.volume = _jumpStrength;
-		audio.pitch = 1f + _jumpStrength;
-		audio.Play();
+		base.OnEditorValidate();
+		_flip = _flip ?? this.RequireComponent<HumanFlip>();
+		_sounds = _sounds ?? this.RequireComponentInChildren<HumanSounds>();
 	}
 
 	#endregion

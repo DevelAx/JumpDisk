@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(HumanJump), typeof(HumanRun), typeof(HumanPositionLimits))]
+[RequireComponent(typeof(HumanJump), typeof(HumanRun))]
 public class HumanController : MyMonoBehaviour
 {
     [SerializeField]
